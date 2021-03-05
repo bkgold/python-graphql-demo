@@ -8,9 +8,13 @@ from .helper import get_fields
 
 
 class Query(ObjectType):
+    all_films = Field(List(Film), description="Get all films in the OG Star Wars franchise")
+    async def resolve_all_films(self, info):
+        return swapi.get_films()   
+
     films = Field(List(Film), episodes=List(Int), description="Get films by episode")
     async def resolve_films(self, info, episodes=[]):
-        films = swapi.get_films(info)   
+        films = swapi.get_films()   
         requested_fields = get_fields(info)
 
         if len(episodes) > 0:
@@ -22,6 +26,8 @@ class Query(ObjectType):
         
         return films
     
+# swapi.create_films_db()
+# swapi.create_characters_db()
 
 app = FastAPI()
 app.add_route("/", GraphQLApp(
