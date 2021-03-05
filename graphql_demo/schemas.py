@@ -1,5 +1,5 @@
 import graphene
-from graphene import ObjectType
+from graphene import ObjectType, InputObjectType
 
 class Character(ObjectType):
     name = graphene.String()
@@ -17,6 +17,14 @@ class Film(ObjectType):
     episode_id = graphene.Int(required=True)
     opening_crawl = graphene.String(description="The opening paragraphs at the beginning of the film.")
     director = graphene.String()
-    producers = graphene.List(graphene.String)
+    producer = graphene.String()
     release_date = graphene.String()
     characters = graphene.List(Character)
+
+class AddFilmInput(InputObjectType):
+    title = graphene.String(required=True)
+    episode_id = graphene.Int(required=True)
+    opening_crawl = graphene.String()
+    director = graphene.String()
+    producer = graphene.String()
+    release_date = graphene.String()
