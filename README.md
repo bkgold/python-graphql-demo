@@ -67,11 +67,11 @@ app.add_route("/", GraphQLApp(
     executor_class=AsyncioExecutor)
 )
 ```
-6. Run: 
+6. Run the server using uvicorn
     ```
     uvicorn swapi_graphql.main:app --reload
     ```
-7. Add input/filter to films query
+7. Add a filter to the films query
 ```
 class Query(ObjectType):
     films = Field(
