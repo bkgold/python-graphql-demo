@@ -1,16 +1,23 @@
-# python-graphql-demo
+# Python GraphQL Demo
 
-1. Project setup
+This repo is an example of a simple GraphQL API Python server. This demo uses the the [Star Wars API](https://swapi.dev/) as a sample data source. 
+
+This demo uses:
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [Graphene](https://graphene-python.org/)
+
+## Follow along with the demo
+
+1. Create a new project
 ```
 poetry new swapi-graphql
 cd swapi-graphql
 ```
-2. Add fastAPI and graphene to project
+2. Add fastAPI, graphene and uvicorn to your project
 ```
 poetry add fastapi graphene uvicorn
 ```
-3. Create "database" of star wars knowledge
-4. Create film schema
+3. Create film schema
 ```
 import graphene
 from graphene import ObjectType
@@ -23,7 +30,7 @@ class Film(ObjectType):
     producer = graphene.String()
     release_date = graphene.String()
 ```
-5. Create film query to return all films
+4. Create film query to return all films
 ```
 from graphene import ObjectType, Field, List
 from .schema import Film
@@ -45,7 +52,7 @@ class Query(ObjectType):
     async def resolve_all_films(self, info):
         return get_films()
 ```
-6. Set up FastApi and GraphQL
+5. Set up FastApi and GraphQL
 ```
 from fastapi import FastAPI
 from graphql.execution.executors.asyncio import AsyncioExecutor
@@ -60,11 +67,11 @@ app.add_route("/", GraphQLApp(
     executor_class=AsyncioExecutor)
 )
 ```
-7. Run: 
+6. Run: 
     ```
     uvicorn swapi_graphql.main:app --reload
     ```
-8. Add input/filter to films query
+7. Add input/filter to films query
 ```
 class Query(ObjectType):
     films = Field(
@@ -81,7 +88,7 @@ class Query(ObjectType):
 
         return films
 ```
-9. Update Film schema to have a list of characters
+8. Update Film schema to have a list of characters
 ```
 class Character(ObjectType):
     name = graphene.String()
@@ -97,7 +104,7 @@ class Film(ObjectType):
     ...
     characters = graphene.List(Character)
 ```
-10. Return characters in films query
+9. Return characters in films query
 ```
 def get_characters_for_film(film):
     characters = None
@@ -110,8 +117,17 @@ async def resolve_films(self, info, episodes=[]):
     for f in films:
         f["characters"] = get_characters_for_film(f)
 ```
-11. Mutation!
+10. Mutation!
 ```
+def add_film(film):
+    films = None
+    with open("./films.json", "r+") as fs:
+        films = json.load(fs)
+        films.append(film)
+        fs.seek(0)
+        json.dump(films, fs, indent=4)
+    return films[-1]
+
 class AddFilm(Mutation):
     film = Field(Film)
 
@@ -139,7 +155,7 @@ mutation {
   }
 }
 ```
-12. Error handling
+11. Error handling
 ```
 for existing_film in films:
     if film["episode_id"] == existing_film["episode_id"]:

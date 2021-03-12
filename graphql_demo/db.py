@@ -17,19 +17,15 @@ def get_films():
 
 
 def add_film(film):
+    films = None
     with open("./films.json", "r+") as fs:
         films = json.load(fs)
-        print(film)
+
+        for existing_film in films:
+            if film["episode_id"] == existing_film["episode_id"]:
+                raise Exception(f"Episode {film.episode_id} already exists!")
+
         films.append(film)
         fs.seek(0)
         json.dump(films, fs, indent=4)
     return films[-1]
-
-
-def get_all_results(response, results):
-    if response["next"]:
-        response = get_swapi_data(response["next"])
-        results += response["results"]
-        return get_all_results(response, results)
-    else:
-        return response, results
