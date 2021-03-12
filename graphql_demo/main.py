@@ -9,24 +9,26 @@ from .helper import get_fields
 
 class DemoQuery(ObjectType):
     # This is the name of our query
-    all_films = Field(List(Film), description="Get all films in the OG Star Wars franchise")
+    all_films = Field(
+        List(Film), description="Get all films in the OG Star Wars franchise"
+    )
     # Resolver method must be prefixed with `resolve_` followed by the query name
     async def resolve_all_films(self, info):
-        return swapi.get_films()   
+        return swapi.get_films()
 
     films = Field(List(Film), episodes=List(Int), description="Get films by episode")
     # The resolver method takes 2 positional arguments. The interesting one here is `info`. We can use the `info` argument to get the requested fields so we don't overfetch.
     async def resolve_films(self, info, episodes=[]):
-        films = swapi.get_films()   
+        films = swapi.get_films()
         requested_fields = get_fields(info)
 
         if len(episodes) > 0:
-            films = [film for film in films if film['episode_id'] in episodes]
-        
-        if ('characters' in requested_fields):
-            for f in films: 
-                f['characters'] = swapi.get_characters_for_film(f)
-        
+            films = [film for film in films if film["episode_id"] in episodes]
+
+        if "characters" in requested_fields:
+            for f in films:
+                f["characters"] = swapi.get_characters_for_film(f)
+
         return films
 
 
@@ -44,14 +46,17 @@ class AddFilm(Mutation):
 
 class DemoMutation(ObjectType):
     add_film = AddFilm.Field()
-    
-    
+
+
 # swapi.create_films_db()
 # swapi.create_characters_db()
 
 
 app = FastAPI()
-app.add_route("/", GraphQLApp(
-  schema=Schema(query=DemoQuery, mutation=DemoMutation),
-  executor_class=AsyncioExecutor)
+app.add_route(
+    "/",
+    GraphQLApp(
+        schema=Schema(query=DemoQuery, mutation=DemoMutation),
+        executor_class=AsyncioExecutor,
+    ),
 )

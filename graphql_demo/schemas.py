@@ -10,8 +10,10 @@ class Character(ObjectType):
     height = graphene.Int()
     mass = graphene.Float()
     skin_color = graphene.String()
-    # homeworld = Planet
 
+# This is how we use the SDL to define our Film type
+# We have a number of fields similar to those in the SWAPI REST API
+# And we have given these types (at this point all of type String)
 class Film(ObjectType):
     title = graphene.String(required=True)
     episode_id = graphene.Int(required=True)
