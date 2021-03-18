@@ -49,7 +49,7 @@ class DemoMutation(ObjectType):
 
 app = FastAPI()
 app.add_route(
-    "/",
+    "/graphql",
     GraphQLApp(
         schema=Schema(query=DemoQuery, mutation=DemoMutation),
         executor_class=AsyncioExecutor,

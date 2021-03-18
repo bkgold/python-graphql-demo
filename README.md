@@ -34,14 +34,7 @@ class Film(ObjectType):
 ```
 from graphene import ObjectType, Field, List
 from .schema import Film
-import json
-
-
-def get_films():
-    films = None
-    with open("./films.json") as fs:
-        films = json.load(fs)
-    return films
+import swapi_graphql.db as db
 
 
 class Query(ObjectType):
@@ -50,7 +43,7 @@ class Query(ObjectType):
     )
 
     async def resolve_films(self, info):
-        return get_films()
+        return db.get_films()
 ```
 5. Set up FastApi and GraphQL
 ```
@@ -58,8 +51,6 @@ from fastapi import FastAPI
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from starlette.graphql import GraphQLApp
 from graphene import Schema, ObjectType, Field, List
-from .schema import Film
-import json
 
 app = FastAPI()
 app.add_route(
@@ -82,7 +73,7 @@ class Query(ObjectType):
     async def resolve_films(self, info, episode_ids=[]):
         films = get_films()
 
-        if len(episode_ids) > 0:
+        if episode_ids:
             films = [film for film in films if film["episode_id"] in episode_ids]
 
         return films
@@ -105,28 +96,13 @@ class Film(ObjectType):
 ```
 9. Return characters in films query
 ```
-def get_characters_for_film(film):
-    characters = None
-    with open("./characters.json") as cs:
-        characters = json.load(cs)
-    return [c for c in characters if c["url"] in film["characters"]]
-
 async def resolve_films(self, info, episodes=[]):
     ...
     for f in films:
-        f["characters"] = get_characters_for_film(f)
+        f["characters"] = db.get_characters_for_film(f)
 ```
 10. Mutation!
 ```
-def add_film(film):
-    films = None
-    with open("./films.json", "r+") as fs:
-        films = json.load(fs)
-        films.append(film)
-        fs.seek(0)
-        json.dump(films, fs, indent=4)
-    return films[-1]
-
 class AddFilm(Mutation):
     film = Field(Film)
 
@@ -134,7 +110,7 @@ class AddFilm(Mutation):
         film = Argument(AddFilmInput)
 
     async def mutate(self, info, film):
-        new_film = add_film(film)
+        new_film = db.add_film(film)
         return AddFilm(film=new_film)
 
 class AddFilmInput(InputObjectType):
