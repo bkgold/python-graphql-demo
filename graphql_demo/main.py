@@ -8,14 +8,18 @@ from .helper import get_fields
 
 
 class DemoQuery(ObjectType):
-    films = Field(List(Film), episodes=List(Int), description="Get films by episode")
+    films = Field(
+        List(Film),
+        episode_ids=List(Int),
+        description="Get films in the Lucas-era Star Wars franchise",
+    )
 
-    async def resolve_films(self, info, episodes=[]):
+    async def resolve_films(self, info, episode_ids=[]):
         films = db.get_films()
         requested_fields = get_fields(info)
 
-        if len(episodes) > 0:
-            films = [film for film in films if film["episode_id"] in episodes]
+        if len(episode_ids) > 0:
+            films = [film for film in films if film["episode_id"] in episode_ids]
 
         if "characters" in requested_fields:
             for f in films:

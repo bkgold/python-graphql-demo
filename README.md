@@ -45,11 +45,11 @@ def get_films():
 
 
 class Query(ObjectType):
-    all_films = Field(
-        List(Film), description="Get all films in the OG Star Wars franchise"
+    films = Field(
+        List(Film), description="Get films in the Lucas-era Star Wars franchise"
     )
 
-    async def resolve_all_films(self, info):
+    async def resolve_films(self, info):
         return get_films()
 ```
 5. Set up FastApi and GraphQL
@@ -62,9 +62,8 @@ from .schema import Film
 import json
 
 app = FastAPI()
-app.add_route("/", GraphQLApp(
-    schema=Schema(query=Query),
-    executor_class=AsyncioExecutor)
+app.add_route(
+    "/graphql", GraphQLApp(schema=Schema(query=Query), executor_class=AsyncioExecutor)
 )
 ```
 6. Run the server using uvicorn
@@ -77,7 +76,7 @@ class Query(ObjectType):
     films = Field(
         List(Film),
         episode_ids=List(Int),
-        description="Get films in the OG Star Wars franchise",
+        description="Get films in the Lucas-era Star Wars franchise",
     )
 
     async def resolve_films(self, info, episode_ids=[]):

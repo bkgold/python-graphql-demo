@@ -1,5 +1,4 @@
 import json
-import requests
 
 
 def get_characters_for_film(film):
