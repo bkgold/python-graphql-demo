@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from graphene import ObjectType, List, Schema, Field, Mutation, Int, Argument
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from starlette.graphql import GraphQLApp
-from .schemas import Film, AddFilmInput
+from .schema import Film, AddFilmInput
 import graphql_demo.db as db
 from .helper import get_fields
 

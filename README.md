@@ -58,9 +58,9 @@ app.add_route(
 )
 ```
 6. Run the server using uvicorn
-    ```
-    uvicorn swapi_graphql.main:app --reload
-    ```
+```
+uvicorn swapi_graphql.main:app --reload
+```
 7. Add a filter to the films query
 ```
 class Query(ObjectType):
@@ -71,7 +71,7 @@ class Query(ObjectType):
     )
 
     async def resolve_films(self, info, episode_ids=[]):
-        films = get_films()
+        films = db.get_films()
 
         if episode_ids:
             films = [film for film in films if film["episode_id"] in episode_ids]

@@ -3,7 +3,7 @@ from graphene import ObjectType, InputObjectType
 
 
 class Character(ObjectType):
-    name = graphene.String()
+    name = graphene.String(required=True)
     birth_year = graphene.String()
     eye_colour = graphene.String()
     gender = graphene.String()
